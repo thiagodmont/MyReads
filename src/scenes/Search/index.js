@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './styles.scss';
+import './styles.css';
 
 class Search extends Component {
   render() {
