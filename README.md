@@ -1,6 +1,8 @@
 # MyReads
 
-Use para iniciar o projeto :)
+Este projeto tem como foco a criação de uma estande de livros, aonde você poderá buscar e atualizar os livros que você está lendo, já leu e que deseja ler. 
+
+Para iniciar o projeto use o comando abaixo :)
 ```
 yarn start
 ```

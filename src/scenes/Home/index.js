@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom';
+
 import Header from '../../components/Header'
 import BookCase from '../../components/BookCase'
 import Book from '../../components/Book'
@@ -9,23 +11,37 @@ import './styles.css';
 
 class Home extends Component {
   state = {
+    books: null,
     currentlyReading: null,
     wantToRead: null,
     read: null
   }
 
   componentDidMount() {
-    BooksAPI.getAll().then(books => {
-      this.setState({
-        currentlyReading: books.filter(book => book.shelf === 'currentlyReading'),
-        wantToRead: books.filter(book => book.shelf === 'wantToRead'),
-        read: books.filter(book => book.shelf === 'read'),
-      })
-    })
+    BooksAPI.getAll().then(books => this.setState({ books }))
   }
 
-  onChange = () => {
-    console.log('onChange')
+  onChange = async (ev, book) => {
+    const value = ev.target.value;
+    await this.onLoadingBook(book);
+
+    BooksAPI.update(book, value).then(() => {
+      this.setState({ books: this.changeProps(book, {'shelf': value, 'loading': false}) });
+    });
+  }
+
+  onLoadingBook = (book) => {
+    return new Promise(resolve => {
+      this.setState({ books: this.changeProps(book, {'loading': true}) }, () => {
+        resolve()
+      });
+    });
+  }
+
+  changeProps = (book, props) => {
+    return this.state.books.map(b => {
+      return b.id === book.id ? Object.assign({}, b, props) : b;
+    });
   }
 
   render() {
@@ -34,8 +50,8 @@ class Home extends Component {
         <Header title={"MyReads"} />
         
         <BookCase title={"Currently Reading"}>
-          {this.state.currentlyReading ? (
-            this.state.currentlyReading.map(book => (
+          {this.state.books ? (
+            this.state.books.filter(book => book.shelf === 'currentlyReading').map(book => (
               <Book
                 key={book.id} 
                 book={book}
@@ -47,8 +63,8 @@ class Home extends Component {
         </BookCase>
 
         <BookCase title={"Want to Read"}>
-          {this.state.currentlyReading ? (
-            this.state.wantToRead.map(book => (
+          {this.state.books ? (
+            this.state.books.filter(book => book.shelf === 'wantToRead').map(book => (
               <Book
                 key={book.id} 
                 book={book}
@@ -60,8 +76,8 @@ class Home extends Component {
         </BookCase>
 
         <BookCase title={"Read"}>
-          {this.state.currentlyReading ? (
-            this.state.read.map(book => (
+          {this.state.books ? (
+            this.state.books.filter(book => book.shelf === 'read').map(book => (
               <Book
                 key={book.id} 
                 book={book}
@@ -71,6 +87,10 @@ class Home extends Component {
             <Loading />
           )}
         </BookCase>
+
+        <div className="open-search">
+          <Link to={`/search`}>Add a book</Link>
+        </div>
       </div>
     );
   }
