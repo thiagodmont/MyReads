@@ -9,3 +9,17 @@
   margin: 0;
   color: white;
 }
+
+.close-book-show {
+  position: absolute;
+  top: 0px;
+  display: block;
+  left: 15px;
+  width: 50px;
+  height: 53px;
+  background-image: url('../../icons/arrow-back-white.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 28px;
+  font-size: 0;
+}

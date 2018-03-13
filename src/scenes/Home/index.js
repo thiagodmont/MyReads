@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 
 import Header from '../../components/Header'
 import BookCase from '../../components/BookCase'
@@ -21,12 +21,12 @@ class Home extends Component {
     BooksAPI.getAll().then(books => this.setState({ books }))
   }
 
-  onChange = async (ev, book) => {
+  onChangeBook = async (ev, book) => {
     const value = ev.target.value;
     await this.onLoadingBook(book);
 
     BooksAPI.update(book, value).then(() => {
-      this.setState({ books: this.changeProps(book, {'shelf': value, 'loading': false}) });
+      this.setState({ books: this.changeProps(book, {'shelf': value, 'loading': false}) })
     });
   }
 
@@ -40,7 +40,7 @@ class Home extends Component {
 
   changeProps = (book, props) => {
     return this.state.books.map(b => {
-      return b.id === book.id ? Object.assign({}, b, props) : b;
+      return b.id === book.id ? Object.assign({}, b, props) : b
     });
   }
 
@@ -55,7 +55,8 @@ class Home extends Component {
               <Book
                 key={book.id} 
                 book={book}
-                onChange={this.onChange} />
+                context={"home"}
+                onChange={this.onChangeBook} />
             ))
           ) : (
             <Loading />
@@ -68,7 +69,8 @@ class Home extends Component {
               <Book
                 key={book.id} 
                 book={book}
-                onChange={this.onChange} />
+                context={"home"}
+                onChange={this.onChangeBook} />
             ))
           ) : (
             <Loading />
@@ -81,7 +83,8 @@ class Home extends Component {
               <Book
                 key={book.id} 
                 book={book}
-                onChange={this.onChange} />
+                context={"home"}
+                onChange={this.onChangeBook} />
             ))
           ) : (
             <Loading />
@@ -89,7 +92,7 @@ class Home extends Component {
         </BookCase>
 
         <div className="open-search">
-          <Link to={`/search`}>Add a book</Link>
+          <Link to={{ pathname: `/search`, query: { bookshelf: this.state.books }}} >Add a book</Link>
         </div>
       </div>
     );

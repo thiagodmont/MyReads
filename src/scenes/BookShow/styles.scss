@@ -1,0 +1,13 @@
+.container-book {
+    display: grid;
+    grid-template-columns: 278px 1fr;
+    grid-template-rows: 386px;
+}
+
+.book-image-show {
+    margin: 16px;
+}
+
+.book-content-show {
+    margin: 16px;
+}

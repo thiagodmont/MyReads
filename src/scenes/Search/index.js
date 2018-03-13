@@ -1,21 +1,129 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react'
+import SearchBar from '../../components/SearchBar'
+import * as BooksAPI from '../../services/BooksAPI'
+import * as Storage from '../../services/Storage'
+import BookCase from '../../components/BookCase'
+import Book from '../../components/Book'
+import Loading from '../../components/Loading'
 
 import './styles.css';
+import emptyData from '../../icons/search_empty_data.png'
 
 class Search extends Component {
+
+  state = {
+    books: null,
+    bookshelf: [],
+    value: Storage.getSearch() || ''
+  }
+
+  constructor(props){
+    super(props);
+    this.timeout =  0;
+  }
+
+  componentDidMount() {
+    this.state.value && this.onChange(this.state.value)
+    this.loadBookShelf()
+  }
+
+  loadBookShelf = () => {
+    const bookshelf = this.props.location.query && this.props.location.query.bookshelf
+
+    if (bookshelf) {
+      this.setState({ bookshelf })
+    } else {
+      BooksAPI.getAll().then(bookshelf => this.setState({ bookshelf }))
+    }
+  }
+
+  onChange = async (value) => {
+    await this.setState({  books: [], loading: true, value })
+
+    if (this.timeout) clearTimeout(this.timeout)
+    
+    this.timeout = setTimeout(async () => {
+
+      if (value.trim()) {
+        Storage.setSearch(value)
+
+        await BooksAPI.search(value).then(books => {
+          const bk = books.map(book => {
+            const check = this.state.bookshelf.filter(bf => bf.id === book.id)[0]
+            return check ? check : book
+          })
+          
+          this.setState({ books: books.error ? [] : bk, loading: false })
+        });
+      } else {
+        this.setState({ books: [], loading: false })
+      }
+    }, 700);
+  }
+
+  onChangeBook = async (ev, book) => {
+    const value = ev.target.value;
+    await this.onLoadingBook(book);
+
+    BooksAPI.update(book, value).then(() => {
+      this.setState({
+        books: this.changeProps(book, {'shelf': value, 'loading': false}),
+        bookshelf: this.changeProps(book, {'shelf': value, 'loading': false}) 
+      });
+    });
+  }
+
+  onLoadingBook = (book) => {
+    return new Promise(resolve => {
+      this.setState({ books: this.changeProps(book, {'loading': true}) }, () => {
+        resolve()
+      });
+    });
+  }
+
+  changeProps = (book, props) => {
+    return this.state.books.map(b => {
+      return b.id === book.id ? Object.assign({}, b, props) : b
+    });
+  }
+
+  renderBooks = () => {
+    if (this.state.books.length <= 0) {
+      return <div> <img src={emptyData} alt="empty data"/> </div>
+    }
+
+    return this.state.books.map(book => (
+      <Book
+        key={book.id} 
+        book={book}
+        context={"search"}
+        onChange={this.onChangeBook}/>
+    ))
+  }
+
   render() {
     return (
       <div className="search-books">
-        <div className="search-books-bar">
-          <Link className="close-search" to={`/`}>Close</Link>
-          
-          <div className="search-books-input-wrapper">
-            <input type="text" placeholder="Search by title or author"/>
-          </div>
-        </div>
+        <SearchBar
+          link="/"
+          onClickBack={() => Storage.cleanSearch()}
+          value={this.state.value}
+          placeholder="Search by title or author"
+          onChange={(e) => this.onChange(e.target.value)} />
+
         <div className="search-books-results">
-          <ol className="books-grid"></ol>
+          {
+            this.state.loading ?
+            <Loading />
+            :
+            <BookCase>
+              {this.state.books ? (
+                this.renderBooks()
+              ) : (
+                null
+              )}
+            </BookCase>
+          }
         </div>
       </div>
     );
