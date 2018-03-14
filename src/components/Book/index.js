@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
@@ -11,7 +11,7 @@ const options = [
   { value: 'none', text: 'None' }
 ]
 
-class Book extends Component {
+class Book extends PureComponent {
 
   render() {
     return (
