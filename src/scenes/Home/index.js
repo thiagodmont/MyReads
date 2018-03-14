@@ -17,8 +17,9 @@ class Home extends Component {
     read: null
   }
 
-  componentDidMount() {
-    BooksAPI.getAll().then(books => this.setState({ books }))
+  async componentDidMount() {
+    const books = await BooksAPI.getAll()
+    this.setState({ books })
   }
 
   onChangeBook = async (ev, book) => {
@@ -26,13 +27,13 @@ class Home extends Component {
     await this.onLoadingBook(book);
 
     BooksAPI.update(book, value).then(() => {
-      this.setState({ books: this.changeProps(book, {'shelf': value, 'loading': false}) })
+      this.setState({ books: this.changeProps(book, {shelf: value, loading: false}) })
     });
   }
 
   onLoadingBook = (book) => {
     return new Promise(resolve => {
-      this.setState({ books: this.changeProps(book, {'loading': true}) }, () => {
+      this.setState({ books: this.changeProps(book, {loading: true}) }, () => {
         resolve()
       });
     });
@@ -40,7 +41,7 @@ class Home extends Component {
 
   changeProps = (book, props) => {
     return this.state.books.map(b => {
-      return b.id === book.id ? Object.assign({}, b, props) : b
+      return b.id === book.id ? {...b, props} : b
     });
   }
 
