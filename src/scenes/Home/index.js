@@ -41,7 +41,7 @@ class Home extends Component {
 
   changeProps = (book, props) => {
     return this.state.books.map(b => {
-      return b.id === book.id ? {...b, props} : b
+      return b.id === book.id ? {...b, ...props} : b
     });
   }
 
