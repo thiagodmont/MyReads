@@ -14,23 +14,25 @@ const options = [
 class Book extends PureComponent {
 
   render() {
+    const { book, context } = this.props
+
     return (
       <li className="book-item">
         <div className="book">
           <div className="book-top">
-            <Link to={`/book/${this.props.book.id}/${this.props.context}`}>
+            <Link to={`/book/${book.id}/${context}`}>
               <div 
                 className="book-cover"
                 style={{ 
                   width: 128, 
                   height: 193, 
-                  backgroundImage: `url("${this.props.book.imageLinks ? this.props.book.imageLinks.smallThumbnail : ''}")` 
+                  backgroundImage: `url("${book.imageLinks ? book.imageLinks.smallThumbnail : ''}")` 
                 }}>
               </div>
             </Link>
 
-            <div className={`book-shelf-changer ${this.props.book.loading ? 'book-shelf-changer-loading' : ''}`}>
-              <select value={this.props.book.shelf || "none"} onChange={(e) => this.props.onChange(e, this.props.book)}>
+            <div className={`book-shelf-changer ${book.loading ? 'book-shelf-changer-loading' : ''}`}>
+              <select value={book.shelf || "none"} onChange={(e) => this.props.onChange(e, book)}>
                 <option value="" disabled>Move to...</option>
                 {options.map( opt => (
                   <option key={opt.value} value={opt.value}>{opt.text}</option>
@@ -38,8 +40,8 @@ class Book extends PureComponent {
               </select>
             </div>
           </div>
-          <div className="book-title">{this.props.book.title}</div>
-          <div className="book-authors">{this.props.book.authors && this.props.book.authors.join(",")}</div>
+          <div className="book-title">{book.title}</div>
+          <div className="book-authors">{book.authors && book.authors.join(",")}</div>
         </div>
       </li>
     );
