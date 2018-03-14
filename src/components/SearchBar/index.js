@@ -8,7 +8,7 @@ const SearchBar = function(props) {
     return (
       <div className="search-books-bar">
         { props.link ? 
-          <Link className="close-search" to={props.link} onClick={() => props.onClickBack()}>Close</Link>
+          <Link className="close-search" to={props.link} onClick={props.onClickBack}>Close</Link>
           :
           null
         }
