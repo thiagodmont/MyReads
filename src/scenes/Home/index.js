@@ -7,7 +7,7 @@ import Book from '../../components/Book'
 import Loading from '../../components/Loading'
 import * as BooksAPI from '../../services/BooksAPI'
 
-import './styles.css';
+import './styles.css'
 
 class Home extends Component {
   state = {
@@ -23,12 +23,12 @@ class Home extends Component {
   }
 
   onChangeBook = async (ev, book) => {
-    const value = ev.target.value;
-    await this.onLoadingBook(book);
+    const value = ev.target.value
 
-    BooksAPI.update(book, value).then(() => {
-      this.setState({ books: this.changeProps(book, {shelf: value, loading: false}) })
-    });
+    await this.onLoadingBook(book)
+    await BooksAPI.update(book, value)
+
+    this.setState({ books: this.changeProps(book, {shelf: value, loading: false}) })
   }
 
   onLoadingBook = (book) => {
